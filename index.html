@@ -469,11 +469,53 @@
             fashionContainer.innerHTML = data.outfits.map((outfit, index) => {
                 let imageUrl = `https://placehold.co/420x560/${outfit.color.substring(1)}/${data.gender === 'Female' ? 'F2D7DA' : '69707A'}?text=Modern+Outfit+${index+1}`;
                 if (outfit.name === 'Soft Mauve Infinity Scarf') {
-                    // Specific image for the scarf
-                    imageUrl = 'https://i.ibb.co/L5hYw4K/Soft-Mauve-Infinity-Scarf.png'; // Re-uploaded the provided image
+                    // Update URL gambar untuk syal dengan tautan gambar baru
+                    imageUrl = 'https://i.ibb.co/6y40F7W/muted-mauve-scraft.png';
                 }
                 return `
                     <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
                         <img src="${imageUrl}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
                         <div class="flex items-center space-x-2 mb-2">
-                            <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};">
+                            <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
+                            <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
+                        </div>
+                        <p class="text-sm text-secondary/80">${outfit.desc}</p>
+                    </div>
+                `;
+            }).join('');
+
+            // Render Cultural Outfits
+            const culturalContainer = document.getElementById('cultural-outfits');
+            culturalContainer.innerHTML = data.cultural.map((outfit, index) => `
+                <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
+                    <img src="https://placehold.co/350x450/${outfit.color.substring(1)}/FFFFFF?text=Cultural+Style+${index+1}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
+                        <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
+                    </div>
+                    <p class="text-sm text-secondary/80 italic">${outfit.desc}</p>
+                    <button onclick="alertCustom('Simulasi: Mencoba foto lain.')" class="mt-4 text-xs text-luminara-rose hover:underline self-end">
+                        Try different photo
+                    </button>
+                </div>
+            `).join('');
+
+            // Render Tips
+            const tipsContainer = document.getElementById('tips-list');
+            const tips = [
+                { icon: 'sun', text: 'Use sunscreen daily to keep your natural tone even.' },
+                { icon: 'flask-round', text: 'Match foundation undertone to AI result for seamless base.' },
+                { icon: 'lightbulb', text: 'Photograph in natural daylight for most accurate AI reading.' },
+                { icon: 'save', text: 'Store palettes and swatches — download for later use.' },
+            ];
+            tipsContainer.innerHTML = tips.map(tip => `
+                <div class="card-bg p-6 flex items-start space-x-4">
+                    <i data-lucide="${tip.icon}" class="w-6 h-6 text-luminara-rose mt-1 flex-shrink-0"></i>
+                    <p class="text-sm text-secondary/90">${tip.text}</p>
+                </div>
+            `).join('');
+            lucide.createIcons(); // Re-render icons after injecting new content
+        }
+    </script>
+</body>
+</html>
