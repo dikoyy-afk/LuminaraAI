@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luminara | Discover Your Perfect Color Palette</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Load Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Load Lucide Icons --><script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             /* Luminara Primary Palette */
@@ -71,8 +68,7 @@
 
     <div id="app-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
 
-        <!-- NAV BAR -->
-        <nav class="sticky top-0 z-50 py-4 glass backdrop-blur-md rounded-b-[20px] mb-8 shadow-sm">
+        <!-- NAV BAR --><nav class="sticky top-0 z-50 py-4 glass backdrop-blur-md rounded-b-[20px] mb-8 shadow-sm">
             <div class="flex justify-between items-center">
                 <div class="text-2xl font-bold text-secondary tracking-tight">Luminara 🌸</div>
                 <div class="hidden md:flex space-x-6 text-sm font-medium">
@@ -87,8 +83,7 @@
                     <i data-lucide="sun" class="w-5 h-5 text-secondary"></i>
                 </button>
             </div>
-            <!-- Mobile Menu (Hidden by default) -->
-            <div id="mobile-menu" class="md:hidden mt-4 space-y-2 text-center text-sm font-medium hidden">
+            <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="md:hidden mt-4 space-y-2 text-center text-sm font-medium hidden">
                 <a href="#home" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('home')">Home</a>
                 <a href="#analysis" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('upload')">Analysis</a>
                 <a href="#outfits" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="alertCustom('Simulasi: Akan menampilkan hasil setelah analisis.')">Outfits</a>
@@ -98,16 +93,14 @@
             </div>
         </nav>
 
-        <!-- Custom Alert/Modal Container -->
-        <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[99] items-center justify-center hidden">
+        <!-- Custom Alert/Modal Container --><div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[99] items-center justify-center hidden">
             <div class="card-bg p-8 max-w-sm w-full mx-4 text-center">
                 <p id="modal-message" class="text-lg font-medium mb-4 text-secondary">Pesan Modal</p>
                 <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="bg-luminara-lavender hover:bg-luminara-rose text-secondary font-semibold py-2 px-4 rounded-full transition duration-300 shadow-md">Tutup</button>
             </div>
         </div>
 
-        <!-- 1. HOME / LANDING PAGE -->
-        <section id="home-view" class="page-section active">
+        <!-- 1. HOME / LANDING PAGE --><section id="home-view" class="page-section active">
             <div class="text-center pt-16 pb-20 card-bg p-8 sm:p-12">
                 <h1 class="text-4xl sm:text-6xl font-extrabold text-secondary mb-4 tracking-tighter">
                     Discover Your Perfect Color Palette with Luminara 🌸
@@ -116,8 +109,7 @@
                     Upload or capture your photo, and let AI reveal the tones and styles that make you shine.
                 </p>
 
-                <!-- INSTRUCTION -->
-                <p class="text-lg sm:text-xl font-semibold text-secondary mb-8 bg-luminara-rose/30 p-4 rounded-xl border border-luminara-rose/50 inline-block">
+                <!-- INSTRUCTION --><p class="text-lg sm:text-xl font-semibold text-secondary mb-8 bg-luminara-rose/30 p-4 rounded-xl border border-luminara-rose/50 inline-block">
                     You can begin your color analysis by either uploading a photo or using your camera directly.
                 </p>
 
@@ -141,8 +133,7 @@
                 </p>
             </div>
 
-            <!-- Quick Features Strip -->
-            <div class="mt-20">
+            <!-- Quick Features Strip --><div class="mt-20">
                 <h2 class="text-3xl font-bold text-center mb-10 text-secondary">Why Luminara?</h2>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
                     <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
@@ -169,8 +160,7 @@
             </div>
         </section>
 
-        <!-- 2. LOADING STATE -->
-        <section id="loading-view" class="page-section hidden text-center">
+        <!-- 2. LOADING STATE --><section id="loading-view" class="page-section hidden text-center">
             <div class="card-bg p-12 max-w-lg mx-auto">
                 <div class="animate-spin mb-6 mx-auto w-12 h-12 border-4 border-t-4 border-t-luminara-rose border-luminara-lavender rounded-full"></div>
                 <p class="text-xl font-semibold mb-2">Analyzing your skin tone...</p>
@@ -178,14 +168,11 @@
             </div>
         </section>
 
-        <!-- 3. AI RESULTS PAGE -->
-        <section id="results-view" class="page-section hidden">
+        <!-- 3. AI RESULTS PAGE --><section id="results-view" class="page-section hidden">
             <div class="space-y-16">
-                <!-- RESULTS CARD -->
-                <div class="card-bg p-6 sm:p-10 max-w-4xl mx-auto">
+                <!-- RESULTS CARD --><div class="card-bg p-6 sm:p-10 max-w-4xl mx-auto">
                     <div class="flex flex-col md:flex-row gap-8 items-start">
-                        <!-- Left: Avatar & Key Data -->
-                        <div class="w-full md:w-1/3 text-center">
+                        <!-- Left: Avatar & Key Data --><div class="w-full md:w-1/3 text-center">
                             <img id="result-avatar" src="https://placehold.co/320x320/EADFF7/33303A?text=Your+Photo" alt="User Avatar" class="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full mx-auto border-4 border-luminara-rose/50 shadow-lg mb-4">
                             
                             <p class="text-sm text-secondary/70 mb-2">Detected As:</p>
@@ -200,27 +187,22 @@
                             </div>
 
                         </div>
-                        <!-- Right: Explanation & Palette -->
-                        <div class="w-full md:w-2/3">
+                        <!-- Right: Explanation & Palette --><div class="w-full md:w-2/3">
                             <h2 class="text-3xl font-extrabold text-secondary mb-4 border-b pb-2 border-luminara-lavender">
                                 <span id="result-undertone" class="text-luminara-rose">Warm</span> Undertone Detected
                             </h2>
 
-                            <!-- Aesthetic Explanation -->
-                            <p id="result-explanation" class="text-lg mb-6 leading-relaxed italic text-secondary/90">
+                            <!-- Aesthetic Explanation --><p id="result-explanation" class="text-lg mb-6 leading-relaxed italic text-secondary/90">
                                 Placeholder: Your skin glows with gentle warmth — think honeyed peach and soft coral. These hues enhance your natural radiance and feel effortlessly luminous.
                             </p>
 
-                            <!-- Color Palette -->
-                            <h3 class="text-xl font-semibold mb-3">
+                            <!-- Color Palette --><h3 class="text-xl font-semibold mb-3">
                                 <span id="palette-label">Feminine Palette</span>
                             </h3>
                             <div id="color-palette-swatches" class="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-4 gap-4">
-                                <!-- Swatches will be injected here -->
-                            </div>
+                                <!-- Swatches will be injected here --></div>
 
-                            <!-- CTA Buttons -->
-                            <div class="flex flex-wrap gap-4 mt-8">
+                            <!-- CTA Buttons --><div class="flex flex-wrap gap-4 mt-8">
                                 <button onclick="showView('upload')" class="px-5 py-2 bg-luminara-lavender text-secondary font-semibold rounded-full hover:bg-luminara-rose transition duration-300 text-sm">
                                     <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block mr-1"></i> Retake Photo
                                 </button>
@@ -235,28 +217,21 @@
                     </div>
                 </div>
 
-                <!-- FASHION & OUTFIT RECOMMENDATIONS -->
-                <h2 class="text-3xl font-bold text-center mb-10 text-secondary">Fashion That Fits You</h2>
+                <!-- FASHION & OUTFIT RECOMMENDATIONS --><h2 class="text-3xl font-bold text-center mb-10 text-secondary">Fashion That Fits You</h2>
                 <div id="fashion-outfits" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Outfit Cards will be injected here -->
-                </div>
+                    <!-- Outfit Cards will be injected here --></div>
 
-                <!-- CULTURAL FASHION RECOMMENDATIONS -->
-                <h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Cultural Styles That Match Your Tone</h2>
+                <!-- CULTURAL FASHION RECOMMENDATIONS --><h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Cultural Styles That Match Your Tone</h2>
                 <div id="cultural-outfits" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Cultural Cards will be injected here -->
-                </div>
+                    <!-- Cultural Cards will be injected here --></div>
 
-                <!-- SKINCARE & COLOR CARE TIPS -->
-                <h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Skincare & Color Care Tips</h2>
+                <!-- SKINCARE & COLOR CARE TIPS --><h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Skincare & Color Care Tips</h2>
                 <div id="tips-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <!-- Tips will be injected here -->
-                </div>
+                    <!-- Tips will be injected here --></div>
             </div>
         </section>
 
-        <!-- 4. ABOUT & CONTACT VIEW -->
-        <section id="about-view" class="page-section hidden text-center pt-20">
+        <!-- 4. ABOUT & CONTACT VIEW --><section id="about-view" class="page-section hidden text-center pt-20">
             <div class="card-bg p-10 max-w-3xl mx-auto">
                 <h2 class="text-4xl font-extrabold text-secondary mb-6">About Luminara</h2>
                 <p class="text-lg leading-relaxed text-secondary/90">
@@ -275,8 +250,7 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <footer class="text-center mt-20 pt-8 border-t border-secondary/10">
+        <!-- FOOTER --><footer class="text-center mt-20 pt-8 border-t border-secondary/10">
             <p class="text-sm text-secondary/60">&copy; 2025 Luminara. All rights reserved.</p>
         </footer>
 
@@ -339,9 +313,9 @@
                     { name: 'Nude Blossom', hex: '#D9B8AF' }, { name: 'Mauve Neutral', hex: '#BFA6A0' },
                 ],
                 outfits: [
-                    { name: 'Muted Mauve Scarf', color: '#BFA6A0', desc: 'Subtle hues like mauve maintain your balance and offer effortless, understated elegance.' },
-                    { name: 'Soft Charcoal Blouse', color: '#33303A', desc: 'A rich neutral that provides depth without favoring warm or cool extremes, maximizing versatility.' },
-                    { name: 'Classic Denim', color: '#5A5F50', desc: 'Grey-based denim works perfectly, providing a timeless and effortless look.' },
+                    { name: 'Soft Beige Linen Top', color: '#E7D7CE', desc: 'Brings out the gentle glow of warm undertones and adds a natural, sunlit softness to portraits.' },
+                    { name: 'Soft Mauve Infinity Scarf', color: '#BFA6A0', desc: 'This gentle mauve infinity scarf drapes elegantly, enhancing neutral undertones with a touch of sophisticated calm and effortless style.' },
+                    { name: 'Classic Denim Jacket', color: '#8D8A86', desc: 'A timeless piece in a balanced wash complements your neutral tone, perfect for layering.' },
                 ],
                 cultural: [
                     { name: 'Batik Parang', color: '#8D8A86', desc: 'Earthy motifs dan muted contrasts (abu-abu/cokelat taupe) merayakan nada seimbang, sempurna untuk keanggunan formal dan sehari-hari.' },
@@ -435,7 +409,9 @@
                 setTimeout(() => {
                     // Randomly select a result for simulation
                     const keys = Object.keys(AI_DATA);
-                    simulationResultKey = keys[Math.floor(Math.random() * keys.length)];
+                    // Force Neutral-Female for this specific image
+                    simulationResultKey = 'N-F'; 
+                    // simulationResultKey = keys[Math.floor(Math.random() * keys.length)]; // Original random selection
                     const data = AI_DATA[simulationResultKey];
 
                     // 4. Populate Results Page
@@ -490,49 +466,14 @@
 
             // Render Fashion Outfits
             const fashionContainer = document.getElementById('fashion-outfits');
-            fashionContainer.innerHTML = data.outfits.map((outfit, index) => `
-                <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
-                    <img src="https://placehold.co/420x560/${outfit.color.substring(1)}/${data.gender === 'Female' ? 'F2D7DA' : '69707A'}?text=Modern+Outfit+${index+1}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
-                        <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
-                    </div>
-                    <p class="text-sm text-secondary/80">${outfit.desc}</p>
-                </div>
-            `).join('');
-
-            // Render Cultural Outfits
-            const culturalContainer = document.getElementById('cultural-outfits');
-            culturalContainer.innerHTML = data.cultural.map((outfit, index) => `
-                <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
-                    <img src="https://placehold.co/350x450/${outfit.color.substring(1)}/FFFFFF?text=Cultural+Style+${index+1}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
-                        <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
-                    </div>
-                    <p class="text-sm text-secondary/80 italic">${outfit.desc}</p>
-                    <button onclick="alertCustom('Simulasi: Mencoba foto lain.')" class="mt-4 text-xs text-luminara-rose hover:underline self-end">
-                        Try different photo
-                    </button>
-                </div>
-            `).join('');
-
-            // Render Tips
-            const tipsContainer = document.getElementById('tips-list');
-            const tips = [
-                { icon: 'sun', text: 'Use sunscreen daily to keep your natural tone even.' },
-                { icon: 'flask-round', text: 'Match foundation undertone to AI result for seamless base.' },
-                { icon: 'lightbulb', text: 'Photograph in natural daylight for most accurate AI reading.' },
-                { icon: 'save', text: 'Store palettes and swatches — download for later use.' },
-            ];
-            tipsContainer.innerHTML = tips.map(tip => `
-                <div class="card-bg p-6 flex items-start space-x-4">
-                    <i data-lucide="${tip.icon}" class="w-6 h-6 text-luminara-rose mt-1 flex-shrink-0"></i>
-                    <p class="text-sm text-secondary/90">${tip.text}</p>
-                </div>
-            `).join('');
-            lucide.createIcons(); // Re-render icons after injecting new content
-        }
-    </script>
-</body>
-</html>
+            fashionContainer.innerHTML = data.outfits.map((outfit, index) => {
+                let imageUrl = `https://placehold.co/420x560/${outfit.color.substring(1)}/${data.gender === 'Female' ? 'F2D7DA' : '69707A'}?text=Modern+Outfit+${index+1}`;
+                if (outfit.name === 'Soft Mauve Infinity Scarf') {
+                    // Specific image for the scarf
+                    imageUrl = 'https://i.ibb.co/L5hYw4K/Soft-Mauve-Infinity-Scarf.png'; // Re-uploaded the provided image
+                }
+                return `
+                    <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
+                        <img src="${imageUrl}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};">
