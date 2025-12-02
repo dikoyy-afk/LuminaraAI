@@ -1,521 +1,652 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luminara | Discover Your Perfect Color Palette</title>
-    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter font --><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Load Lucide Icons --><script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            /* Luminara Primary Palette */
-            --lavender-mist: #EADFF7;
-            --warm-sand: #F6EFE7;
-            --dusty-rose: #F2D7DA;
-            --sage-green: #C7D8C4;
-            --soft-charcoal: #33303A;
-            --shadow-color: rgba(22, 22, 22, 0.1);
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--warm-sand);
-            color: var(--soft-charcoal);
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .card-bg {
-            background-color: white;
-            box-shadow: 0 10px 30px var(--shadow-color);
-            border-radius: 30px; /* Custom rounded corners */
-        }
-        /* Custom Tailwind Configuration */
-        .glass {
-            background-color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .page-section {
-            padding-top: 4rem;
-            padding-bottom: 4rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-        }
-        .page-section.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'luminara-lavender': 'var(--lavender-mist)',
-                        'luminara-sand': 'var(--warm-sand)',
-                        'luminara-rose': 'var(--dusty-rose)',
-                        'luminara-sage': 'var(--sage-green)',
-                        'luminara-charcoal': 'var(--soft-charcoal)',
-                        'primary': 'var(--lavender-mist)',
-                        'secondary': 'var(--soft-charcoal)',
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="min-h-screen">
+import React, { useState, useRef, useEffect } from 'react';
+import { Camera, Upload, RefreshCw, ChevronRight, Info, Heart, Share2, Download, Sun, Moon, X, Sparkles, Shirt, MapPin } from 'lucide-react';
 
-    <div id="app-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+// --- DATA & CONFIGURATION ---
 
-        <!-- NAV BAR --><nav class="sticky top-0 z-50 py-4 glass backdrop-blur-md rounded-b-[20px] mb-8 shadow-sm">
-            <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold text-secondary tracking-tight">Luminara 🌸</div>
-                <div class="hidden md:flex space-x-6 text-sm font-medium">
-                    <a href="#home" class="hover:text-luminara-rose transition duration-150" onclick="showView('home')">Home</a>
-                    <a href="#analysis" class="hover:text-luminara-rose transition duration-150" onclick="showView('upload')">Analysis</a>
-                    <a href="#outfits" class="hover:text-luminara-rose transition duration-150" onclick="alertCustom('Simulasi: Akan menampilkan hasil setelah analisis.')">Outfits</a>
-                    <a href="#culture" class="hover:text-luminara-rose transition duration-150" onclick="alertCustom('Simulasi: Akan menampilkan hasil setelah analisis.')">Culture</a>
-                    <a href="#about" class="hover:text-luminara-rose transition duration-150" onclick="showView('about')">About</a>
-                    <a href="#contact" class="hover:text-luminara-rose transition duration-150" onclick="showView('contact')">Contact</a>
-                </div>
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-luminara-sand transition duration-150" aria-label="Toggle dark mode">
-                    <i data-lucide="sun" class="w-5 h-5 text-secondary"></i>
-                </button>
-            </div>
-            <!-- Mobile Menu (Hidden by default) --><div id="mobile-menu" class="md:hidden mt-4 space-y-2 text-center text-sm font-medium hidden">
-                <a href="#home" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('home')">Home</a>
-                <a href="#analysis" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('upload')">Analysis</a>
-                <a href="#outfits" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="alertCustom('Simulasi: Akan menampilkan hasil setelah analisis.')">Outfits</a>
-                <a href="#culture" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="alertCustom('Simulasi: Akan menampilkan hasil setelah analisis.')">Culture</a>
-                <a href="#about" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('about')">About</a>
-                <a href="#contact" class="block py-2 hover:bg-luminara-sand rounded-lg" onclick="showView('contact')">Contact</a>
-            </div>
-        </nav>
+const BRAND = {
+  name: "LUMINARA",
+  colors: {
+    bg: "bg-stone-50",
+    primary: "text-purple-900",
+    accent: "text-yellow-600",
+    soft: "bg-purple-50",
+    gold: "border-yellow-600"
+  }
+};
 
-        <!-- Custom Alert/Modal Container --><div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-[99] items-center justify-center hidden">
-            <div class="card-bg p-8 max-w-sm w-full mx-4 text-center">
-                <p id="modal-message" class="text-lg font-medium mb-4 text-secondary">Pesan Modal</p>
-                <button onclick="document.getElementById('custom-modal').classList.add('hidden')" class="bg-luminara-lavender hover:bg-luminara-rose text-secondary font-semibold py-2 px-4 rounded-full transition duration-300 shadow-md">Tutup</button>
+const SEASONS = {
+  Spring: {
+    type: "Warm",
+    description: "Bright, fresh, and warm. You shine in clear, vibrant colors.",
+    characteristics: "Golden undertones, bright eyes, often warm hair colors.",
+    palette: {
+      primary: ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF"],
+      accent: ["#FF9F45", "#F7ECDE", "#E8F9FD"],
+      avoid: ["#000000", "#FFFFFF", "#525E75"] // Stark black/white, muddy greys
+    },
+    metals: "Gold, Rose Gold, Bright Bronze",
+    casualOutfits: [
+      { name: "Sunny Day Brunch", desc: "Coral blouse with cream linen trousers.", image: "casual-spring-1" },
+      { name: "Garden Party", desc: "Teal midi dress with gold accessories.", image: "casual-spring-2" },
+      { name: "City Walk", desc: "Warm beige trench coat over a peach top.", image: "casual-spring-3" }
+    ]
+  },
+  Summer: {
+    type: "Cool",
+    description: "Soft, cool, and muted. Pastels and dusty shades look elegant on you.",
+    characteristics: "Pinkish undertones, low contrast between hair and skin.",
+    palette: {
+      primary: ["#8CABFF", "#B983FF", "#94B3FD", "#F0EBE3"],
+      accent: ["#E4E9BE", "#FFCBCB", "#A6D1E6"],
+      avoid: ["#FF8C32", "#FFFF00", "#000000"] // Orange, neon yellow, stark black
+    },
+    metals: "Silver, White Gold, Platinum",
+    casualOutfits: [
+      { name: "Soft Office", desc: "Powder blue shirt with slate grey skirt.", image: "casual-summer-1" },
+      { name: "Weekend Vibes", desc: "Lavender knit sweater with white denim.", image: "casual-summer-2" },
+      { name: "Evening Stroll", desc: "Dusty rose wrap dress with silver jewelry.", image: "casual-summer-3" }
+    ]
+  },
+  Autumn: {
+    type: "Warm",
+    description: "Rich, earthy, and warm. Deep muted tones enhance your glow.",
+    characteristics: "Golden or olive undertones, rich hair colors.",
+    palette: {
+      primary: ["#A05555", "#D4A373", "#5F6F52", "#BC6C25"],
+      accent: ["#FEFAE0", "#DDA15E", "#606C38"],
+      avoid: ["#FF00FF", "#00FFFF", "#E0E0E0"] // Neons, cool greys
+    },
+    metals: "Gold, Copper, Brass, Antique Bronze",
+    casualOutfits: [
+      { name: "Coffee Date", desc: "Rust orange turtleneck with olive cargo pants.", image: "casual-autumn-1" },
+      { name: "Gallery Visit", desc: "Mustard yellow blouse with dark brown slacks.", image: "casual-autumn-2" },
+      { name: "Cozy Night", desc: "Terracotta oversized cardigan.", image: "casual-autumn-3" }
+    ]
+  },
+  Winter: {
+    type: "Cool",
+    description: "Sharp, cool, and vivid. High contrast colors make you pop.",
+    characteristics: "Cool undertones, high contrast features (very dark hair/light skin or vice versa).",
+    palette: {
+      primary: ["#000000", "#FFFFFF", "#FF0000", "#1F4690"],
+      accent: ["#3A0CA3", "#F72585", "#4CC9F0"],
+      avoid: ["#D4A373", "#BC6C25", "#F4E06D"] // Earth tones, mustard, beige
+    },
+    metals: "Silver, Platinum, White Gold",
+    casualOutfits: [
+      { name: "Power Look", desc: "Crisp white shirt with sharp black blazer.", image: "casual-winter-1" },
+      { name: "Bold Statement", desc: "Royal blue jumpsuit with silver belt.", image: "casual-winter-2" },
+      { name: "Night Out", desc: "Emerald green velvet top with black jeans.", image: "casual-winter-3" }
+    ]
+  }
+};
+
+const TRADITIONAL_OUTFITS = [
+  { region: "Aceh", name: "Ulee Balang", desc: "Historically for royalty, featuring intricate gold threading on black or red fabric.", keyword: "Aceh traditional clothes" },
+  { region: "Sumatera Utara", name: "Ulos Batak", desc: "Hand-woven textile rich in cultural significance, often in red, black, and white.", keyword: "Batak traditional clothes" },
+  { region: "Sumatera Barat", name: "Bundo Kanduang", desc: "Minangkabau attire featuring the distinctive horned headdress (Tengkuluk).", keyword: "Minang traditional clothes" },
+  { region: "Riau", name: "Baju Melayu", desc: "Loose fitting tunic, worn with sarong and songkok, symbolizing modesty.", keyword: "Riau traditional clothes" },
+  { region: "Kepulauan Riau", name: "Teluk Belanga", desc: "Similar to Baju Melayu but the collar is circular (cekak musang).", keyword: "Melayu traditional clothes" },
+  { region: "Jambi", name: "Baju Kurung Tanggung", desc: "Unique sleeves that end at the elbow, adorned with gold embroidery.", keyword: "Jambi traditional clothes" },
+  { region: "Sumatera Selatan", name: "Aesan Gede", desc: "Grand aesthetic influenced by the Srivijaya empire, heavy on gold and red.", keyword: "Palembang traditional clothes" },
+  { region: "Bengkulu", name: "Rejang Lenong", desc: "Blend of Malay and local culture, often uses velvet and gold embroidery.", keyword: "Bengkulu traditional clothes" },
+  { region: "Lampung", name: "Tulang Bawang", desc: "Characterized by the Siger crown and heavy Tapis fabrics.", keyword: "Lampung traditional clothes" },
+  { region: "Bangka Belitung", name: "Paksian", desc: "Influence of Arab and Chinese culture, featuring the Sungkon headdress.", keyword: "Bangka Belitung clothes" },
+  { region: "DKI Jakarta", name: "Kebaya Encim", desc: "Betawi classic. Vibrant, light fabric with floral embroidery, influenced by Chinese Peranakan.", keyword: "Kebaya Encim" },
+  { region: "Jawa Barat", name: "Kebaya Sunda", desc: "Elegant and simple, typically brighter colors, often showing the neck line.", keyword: "Sunda traditional clothes" },
+  { region: "Jawa Tengah", name: "Jawi Jangkep", desc: "Formal male attire with Beskap, Jarik, and Blangkon.", keyword: "Java traditional clothes" },
+  { region: "DI Yogyakarta", name: "Paes Ageng", desc: "Royal wedding attire, black velvet with gold printed flowers.", keyword: "Yogya traditional clothes" },
+  { region: "Jawa Timur", name: "Pesa’an", desc: "Madura attire. Simple black loose shirt and pants with red/white striped inner tee.", keyword: "Madura traditional clothes" },
+  { region: "Banten", name: "Baju Pangsi", desc: "Often worn by Jawara, black styling representing agility and strength.", keyword: "Banten traditional clothes" },
+  { region: "Bali", name: "Payas Agung", desc: "Luxurious, rich in gold and bright colors, for weddings and major ceremonies.", keyword: "Bali traditional clothes" },
+  { region: "NTB", name: "Lambung", desc: "Sasak women's attire, simple black top with woven songket.", keyword: "Sasak traditional clothes" },
+  { region: "NTT", name: "Amarasi", desc: "Rich hand-woven Tenun Ikat fabrics from Timor region.", keyword: "Tenun Ikat NTT" },
+  { region: "Kalimantan Barat", name: "King Baba", desc: "Dayak traditional wear using bark fiber with intricate paintings.", keyword: "Dayak clothes" },
+  { region: "Kalimantan Tengah", name: "Sangkarut", desc: "Vest-like attire made from Nyamu wood fiber.", keyword: "Dayak clothes" },
+  { region: "Kalimantan Selatan", name: "Bagajah Gamuling", desc: "Banjar royal wedding attire, heavily influenced by Hindu culture.", keyword: "Banjar traditional clothes" },
+  { region: "Kalimantan Timur", name: "Sapei Sapaq", desc: "Dayak Kenyah attire, beautiful beadwork patterns.", keyword: "Dayak Kenyah clothes" },
+  { region: "Sulawesi Utara", name: "Laku Tepu", desc: "Long fiber cloth, distinctive for its tubular shape.", keyword: "Minahasa traditional clothes" },
+  { region: "Gorontalo", name: "Makuta", desc: "Traditional wedding attire with distinctive tall headgear.", keyword: "Gorontalo traditional clothes" },
+  { region: "Sulawesi Tengah", name: "Nggembe", desc: "Square shaped top adorned with beads, worn by women.", keyword: "Sulawesi Tengah clothes" },
+  { region: "Sulawesi Selatan", name: "Baju Bodo", desc: "One of the oldest loom garments, sheer and loose, boxy shape.", keyword: "Baju Bodo" },
+  { region: "Sulawesi Tenggara", name: "Babu Nggawi", desc: "Tolaki tribe attire, velvet with traditional motifs.", keyword: "Tolaki traditional clothes" },
+  { region: "Sulawesi Barat", name: "Pattuqduq Towaine", desc: "Mandar attire, worn for the Pattuqduq dance.", keyword: "Mandar traditional clothes" },
+  { region: "Maluku", name: "Baju Cele", desc: "Checkered red and white pattern is iconic.", keyword: "Maluku traditional clothes" },
+  { region: "Maluku Utara", name: "Manteren Lamo", desc: "Royal attire of the Sultans of Ternate and Tidore.", keyword: "Ternate traditional clothes" },
+  { region: "Papua", name: "Yokal & Sali", desc: "Natural fiber skirts for women, symbol of marital status.", keyword: "Papua traditional clothes" },
+  { region: "Papua Barat", name: "Ewer", desc: "Made from dried straw or fringed fabrics.", keyword: "West Papua traditional clothes" },
+];
+
+// --- COMPONENTS ---
+
+const Header = ({ setPage }) => (
+  <nav className="flex justify-between items-center p-6 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-stone-100">
+    <div 
+      className="text-2xl font-serif font-bold tracking-widest text-purple-900 cursor-pointer flex items-center gap-2"
+      onClick={() => setPage('landing')}
+    >
+      <Sparkles className="w-6 h-6 text-yellow-500" />
+      LUMINARA
+    </div>
+    <div className="hidden md:flex gap-8 text-sm font-medium text-stone-600">
+      <button onClick={() => setPage('landing')} className="hover:text-purple-700 transition">HOME</button>
+      <button onClick={() => setPage('about')} className="hover:text-purple-700 transition">ABOUT</button>
+      <button onClick={() => setPage('analyze')} className="bg-purple-900 text-white px-5 py-2 rounded-full hover:bg-purple-800 transition shadow-lg shadow-purple-200">
+        ANALYZE ME
+      </button>
+    </div>
+  </nav>
+);
+
+const LandingPage = ({ setPage }) => (
+  <div className="min-h-screen bg-gradient-to-br from-stone-50 via-purple-50 to-orange-50 pt-10">
+    <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <div className="space-y-8 animate-fade-in-up">
+        <div className="inline-block px-4 py-1 border border-purple-200 rounded-full text-xs font-bold tracking-widest text-purple-800 bg-white">
+          DISCOVER YOUR TRUE COLORS
+        </div>
+        <h1 className="text-5xl md:text-7xl font-serif text-purple-950 leading-tight">
+          Shine in Your <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-yellow-500">Authentic Light</span>
+        </h1>
+        <p className="text-lg text-stone-600 leading-relaxed max-w-md">
+          Luminara uses AI-driven color analysis to determine your seasonal palette and undertone. Discover the outfits, metals, and Indonesian heritage styles that suit you best.
+        </p>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => setPage('analyze')}
+            className="px-8 py-4 bg-purple-900 text-white rounded-full font-medium hover:bg-purple-800 transition shadow-xl flex items-center gap-2"
+          >
+            Start Analysis <ChevronRight size={18} />
+          </button>
+          <button 
+            onClick={() => setPage('about')}
+            className="px-8 py-4 bg-white text-purple-900 border border-purple-100 rounded-full font-medium hover:bg-purple-50 transition"
+          >
+            Learn More
+          </button>
+        </div>
+      </div>
+      
+      <div className="relative h-[500px] w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden hidden md:block border-4 border-white">
+        <img 
+          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80" 
+          alt="Model" 
+          className="w-full h-full object-cover opacity-90"
+        />
+        <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-lg">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-stone-500 tracking-wider">DETECTED SEASON</p>
+              <p className="font-serif text-xl text-purple-900">Bright Spring</p>
             </div>
+            <div className="flex gap-2">
+              <div className="w-6 h-6 rounded-full bg-rose-400"></div>
+              <div className="w-6 h-6 rounded-full bg-yellow-400"></div>
+              <div className="w-6 h-6 rounded-full bg-green-400"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const AboutPage = () => (
+  <div className="max-w-4xl mx-auto px-6 py-16 space-y-12 text-stone-700">
+    <div className="text-center space-y-4">
+      <h2 className="text-4xl font-serif text-purple-900">About Luminara</h2>
+      <div className="w-20 h-1 bg-yellow-400 mx-auto"></div>
+    </div>
+    <p className="text-lg leading-loose text-center">
+      Luminara comes from the word "Luminary," meaning a source of light. We believe everyone has a unique light that shines brightest when paired with the right colors. Our mission is to bridge modern technology with timeless style, helping you find harmony in your wardrobe—from casual streetwear to the rich heritage of Indonesian tradition.
+    </p>
+    <div className="grid md:grid-cols-3 gap-8 mt-12">
+      {[
+        { title: "Futuristic Tech", desc: "Real-time browser-based skin tone analysis." },
+        { title: "Cultural Roots", desc: "Deep integration of Indonesian traditional textiles." },
+        { title: "Personal Harmony", desc: "Tailored advice for metals, colors, and styling." }
+      ].map((item, i) => (
+        <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-stone-100 text-center">
+          <h3 className="font-serif text-xl text-purple-900 mb-2">{item.title}</h3>
+          <p className="text-sm text-stone-500">{item.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const AnalysisPage = ({ onComplete }) => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [mode, setMode] = useState(null); // 'camera' or 'upload'
+  const [stream, setStream] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const startCamera = async () => {
+    setMode('camera');
+    setImagePreview(null);
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setStream(mediaStream);
+      if (videoRef.current) videoRef.current.srcObject = mediaStream;
+    } catch (err) {
+      alert("Unable to access camera. Please try uploading a photo.");
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMode('upload');
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        setStream(null);
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => setImagePreview(event.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const processImage = (imgElementOrVideo) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = 300;
+    canvas.height = 300;
+    
+    // Draw image to canvas
+    ctx.drawImage(imgElementOrVideo, 0, 0, 300, 300);
+    
+    // Get center pixel data (simulate face area)
+    const centerData = ctx.getImageData(100, 100, 100, 100).data;
+    
+    let r = 0, g = 0, b = 0;
+    for (let i = 0; i < centerData.length; i += 4) {
+      r += centerData[i];
+      g += centerData[i+1];
+      b += centerData[i+2];
+    }
+    const pixelCount = centerData.length / 4;
+    r = Math.floor(r / pixelCount);
+    g = Math.floor(g / pixelCount);
+    b = Math.floor(b / pixelCount);
+
+    // Simple Color Theory Logic (Simulation)
+    // 1. Calculate Warmth (Yellow vs Blue ratio approximate)
+    const isWarm = r > b && g > b * 0.8;
+    
+    // 2. Calculate Contrast/Brightness (Light vs Deep)
+    const brightness = (r + g + b) / 3;
+    const isLight = brightness > 128;
+
+    let season = "";
+    if (isWarm && isLight) season = "Spring";
+    else if (!isWarm && isLight) season = "Summer";
+    else if (isWarm && !isLight) season = "Autumn";
+    else season = "Winter";
+
+    return { season, undertone: isWarm ? "Warm" : "Cool", rgb: { r, g, b } };
+  };
+
+  const runAnalysis = () => {
+    setAnalyzing(true);
+    setTimeout(() => {
+      let result;
+      if (mode === 'camera' && videoRef.current) {
+        result = processImage(videoRef.current);
+      } else if (mode === 'upload' && imagePreview) {
+        const img = new Image();
+        img.src = imagePreview;
+        img.onload = () => {
+          result = processImage(img);
+          onComplete(result);
+        };
+        return;
+      }
+      
+      if (result) onComplete(result);
+      // Clean up camera
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    }, 2000);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-12 animate-fade-in">
+      <h2 className="text-3xl font-serif text-purple-900 text-center mb-8">Analyze Your Features</h2>
+      
+      <div className="bg-white rounded-3xl p-6 shadow-xl border border-stone-100 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+        {analyzing && (
+          <div className="absolute inset-0 bg-white/90 z-20 flex flex-col items-center justify-center">
+            <RefreshCw className="w-12 h-12 text-purple-600 animate-spin mb-4" />
+            <p className="font-serif text-lg text-purple-900">Scanning undertones...</p>
+          </div>
+        )}
+
+        {/* Viewport */}
+        <div className="w-64 h-64 bg-stone-100 rounded-full overflow-hidden border-4 border-yellow-100 shadow-inner mb-6 relative">
+          {mode === 'camera' && (
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" />
+          )}
+          {mode === 'upload' && imagePreview && (
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+          )}
+          {!mode && (
+            <div className="w-full h-full flex items-center justify-center text-stone-400">
+              <Sun className="w-16 h-16 opacity-20" />
+            </div>
+          )}
+          
+          {/* Analysis Overlay Grid */}
+          {(mode) && (
+            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 opacity-30">
+              <div className="border-r border-b border-white"></div>
+              <div className="border-b border-white"></div>
+              <div className="border-r border-white"></div>
+              <div></div>
+            </div>
+          )}
         </div>
 
-        <!-- 1. HOME / LANDING PAGE --><section id="home-view" class="page-section active">
-            <div class="text-center pt-16 pb-20 card-bg p-8 sm:p-12">
-                <h1 class="text-4xl sm:text-6xl font-extrabold text-secondary mb-4 tracking-tighter">
-                    Discover Your Perfect Color Palette with Luminara 🌸
-                </h1>
-                <p class="text-xl sm:text-2xl text-secondary/80 mb-8 max-w-3xl mx-auto font-light">
-                    Upload or capture your photo, and let AI reveal the tones and styles that make you shine.
-                </p>
+        {/* Controls */}
+        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+          <button 
+            onClick={startCamera}
+            className={p-4 rounded-xl flex flex-col items-center gap-2 transition ${mode === 'camera' ? 'bg-purple-100 border-2 border-purple-500 text-purple-900' : 'bg-stone-50 hover:bg-stone-100 text-stone-600'}}
+          >
+            <Camera size={24} />
+            <span className="text-sm font-medium">Use Camera</span>
+          </button>
+          
+          <label className={p-4 rounded-xl flex flex-col items-center gap-2 cursor-pointer transition ${mode === 'upload' ? 'bg-purple-100 border-2 border-purple-500 text-purple-900' : 'bg-stone-50 hover:bg-stone-100 text-stone-600'}}>
+            <Upload size={24} />
+            <span className="text-sm font-medium">Upload Photo</span>
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+          </label>
+        </div>
 
-                <!-- INSTRUCTION --><p class="text-lg sm:text-xl font-semibold text-secondary mb-8 bg-luminara-rose/30 p-4 rounded-xl border border-luminara-rose/50 inline-block">
-                    You can begin your color analysis by either uploading a photo or using your camera directly.
-                </p>
-
-                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-4">
-                    <button onclick="alertCustom('Simulasi: Membutuhkan izin kamera. Mohon gunakan tombol Upload untuk simulasi.')"
-                            class="flex items-center justify-center px-8 py-3 bg-secondary text-white font-bold rounded-[20px] hover:bg-secondary/90 transition duration-300 shadow-lg shadow-secondary/20 transform hover:scale-[1.02]">
-                        <i data-lucide="camera" class="w-5 h-5 mr-2"></i> Use Camera Now
-                    </button>
-                    <button onclick="document.getElementById('photo-upload-input').click();"
-                            class="flex items-center justify-center px-8 py-3 bg-luminara-lavender text-secondary font-bold rounded-[20px] hover:bg-luminara-rose border-2 border-luminara-lavender transition duration-300 shadow-md shadow-luminara-lavender/20 transform hover:scale-[1.02]">
-                        <i data-lucide="upload" class="w-5 h-5 mr-2"></i> Upload a Photo
-                    </button>
-                </div>
-                <p class="text-sm text-secondary/60 mt-2 italic">
-                    Use camera for instant results — upload for higher-res images.
-                </p>
-                <input type="file" id="photo-upload-input" accept="image/jpeg, image/png" class="hidden" onchange="handlePhotoUpload(event)">
-
-                <p class="text-xs text-secondary/50 mt-8">
-                    Your photos are processed securely and never stored without permission.
-                </p>
-            </div>
-
-            <!-- Quick Features Strip --><div class="mt-20">
-                <h2 class="text-3xl font-bold text-center mb-10 text-secondary">Why Luminara?</h2>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                    <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
-                        <i data-lucide="scan" class="w-8 h-8 text-luminara-rose mb-3"></i>
-                        <p class="font-semibold text-sm">Real-time Camera Analysis</p>
-                    </div>
-                    <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
-                        <i data-lucide="image" class="w-8 h-8 text-luminara-rose mb-3"></i>
-                        <p class="font-semibold text-sm">Upload Photo</p>
-                    </div>
-                    <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
-                        <i data-lucide="palette" class="w-8 h-8 text-luminara-rose mb-3"></i>
-                        <p class="font-semibold text-sm">Gender-based Palettes</p>
-                    </div>
-                    <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
-                        <i data-lucide="landmark" class="w-8 h-8 text-luminara-rose mb-3"></i>
-                        <p class="font-semibold text-sm">Cultural Outfit Images</p>
-                    </div>
-                    <div class="card-bg p-6 text-center transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-center justify-center">
-                        <i data-lucide="download" class="w-8 h-8 text-luminara-rose mb-3"></i>
-                        <p class="font-semibold text-sm">Download Palette</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. LOADING STATE --><section id="loading-view" class="page-section hidden text-center">
-            <div class="card-bg p-12 max-w-lg mx-auto">
-                <div class="animate-spin mb-6 mx-auto w-12 h-12 border-4 border-t-4 border-t-luminara-rose border-luminara-lavender rounded-full"></div>
-                <p class="text-xl font-semibold mb-2">Analyzing your skin tone...</p>
-                <p class="text-secondary/70">detecting undertone and color family.</p>
-            </div>
-        </section>
-
-        <!-- 3. AI RESULTS PAGE --><section id="results-view" class="page-section hidden">
-            <div class="space-y-16">
-                <!-- RESULTS CARD --><div class="card-bg p-6 sm:p-10 max-w-4xl mx-auto">
-                    <div class="flex flex-col md:flex-row gap-8 items-start">
-                        <!-- Left: Avatar & Key Data --><div class="w-full md:w-1/3 text-center">
-                            <img id="result-avatar" src="https://placehold.co/320x320/EADFF7/33303A?text=Your+Photo" alt="User Avatar" class="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full mx-auto border-4 border-luminara-rose/50 shadow-lg mb-4">
-                            
-                            <p class="text-sm text-secondary/70 mb-2">Detected As:</p>
-                            <div class="flex justify-center items-center mb-4">
-                                <span id="result-gender" class="text-lg font-bold mr-2">Female</span>
-                                <button onclick="alertCustom('Simulasi: Gender toggle berfungsi!')" class="text-xs text-luminara-rose hover:underline">(Change)</button>
-                            </div>
-                            
-                            <div class="space-y-2 text-left w-max mx-auto">
-                                <p class="text-base"><span class="font-semibold">Seasonal:</span> <span id="result-seasonal" class="text-luminara-charcoal">Spring</span></p>
-                                <p class="text-base"><span class="font-semibold">Confidence:</span> <span id="result-confidence" class="text-luminara-sage">91%</span></p>
-                            </div>
-
-                        </div>
-                        <!-- Right: Explanation & Palette --><div class="w-full md:w-2/3">
-                            <h2 class="text-3xl font-extrabold text-secondary mb-4 border-b pb-2 border-luminara-lavender">
-                                <span id="result-undertone" class="text-luminara-rose">Warm</span> Undertone Detected
-                            </h2>
-
-                            <!-- Aesthetic Explanation --><p id="result-explanation" class="text-lg mb-6 leading-relaxed italic text-secondary/90">
-                                Placeholder: Your skin glows with gentle warmth — think honeyed peach and soft coral. These hues enhance your natural radiance and feel effortlessly luminous.
-                            </p>
-
-                            <!-- Color Palette --><h3 class="text-xl font-semibold mb-3">
-                                <span id="palette-label">Feminine Palette</span>
-                            </h3>
-                            <div id="color-palette-swatches" class="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-4 gap-4">
-                                <!-- Swatches will be injected here --></div>
-
-                            <!-- CTA Buttons --><div class="flex flex-wrap gap-4 mt-8">
-                                <button onclick="showView('upload')" class="px-5 py-2 bg-luminara-lavender text-secondary font-semibold rounded-full hover:bg-luminara-rose transition duration-300 text-sm">
-                                    <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block mr-1"></i> Retake Photo
-                                </button>
-                                <button onclick="alertCustom('Simulasi: Palette PNG/CSS/ASE berhasil diunduh!')" class="px-5 py-2 bg-luminara-sage text-white font-semibold rounded-full hover:bg-luminara-sage/80 transition duration-300 text-sm">
-                                    <i data-lucide="download" class="w-4 h-4 inline-block mr-1"></i> Download Palette
-                                </button>
-                                <button onclick="alertCustom('Simulasi: Hasil telah dibagikan ke sosial media!')" class="px-5 py-2 border border-secondary/20 text-secondary font-semibold rounded-full hover:bg-luminara-sand transition duration-300 text-sm">
-                                    <i data-lucide="share2" class="w-4 h-4 inline-block mr-1"></i> Share Result
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FASHION & OUTFIT RECOMMENDATIONS --><h2 class="text-3xl font-bold text-center mb-10 text-secondary">Fashion That Fits You</h2>
-                <div id="fashion-outfits" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Outfit Cards will be injected here --></div>
-
-                <!-- CULTURAL FASHION RECOMMENDATIONS --><h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Cultural Styles That Match Your Tone</h2>
-                <div id="cultural-outfits" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Cultural Cards will be injected here --></div>
-
-                <!-- SKINCARE & COLOR CARE TIPS --><h2 class="text-3xl font-bold text-center pt-8 mb-10 text-secondary">Skincare & Color Care Tips</h2>
-                <div id="tips-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <!-- Tips will be injected here --></div>
-            </div>
-        </section>
-
-        <!-- 4. ABOUT & CONTACT VIEW --><section id="about-view" class="page-section hidden text-center pt-20">
-            <div class="card-bg p-10 max-w-3xl mx-auto">
-                <h2 class="text-4xl font-extrabold text-secondary mb-6">About Luminara</h2>
-                <p class="text-lg leading-relaxed text-secondary/90">
-                    Luminara combines artificial intelligence with personal beauty discovery. We help people understand their natural tones and express themselves confidently through both modern and traditional fashion. Our mission is to illuminate your personal style journey.
-                </p>
-            </div>
-        </section>
-
-        <section id="contact-view" class="page-section hidden text-center pt-20">
-            <div class="card-bg p-10 max-w-3xl mx-auto">
-                <h2 class="text-4xl font-extrabold text-secondary mb-6">Contact Us</h2>
-                <p class="text-lg leading-relaxed text-secondary/90">
-                    For support or business inquiries, please reach out to us at:
-                </p>
-                <a href="mailto:hello@luminara.ai" class="text-luminara-rose font-bold text-xl hover:underline">hello@luminara.ai</a>
-            </div>
-        </section>
-
-        <!-- FOOTER --><footer class="text-center mt-20 pt-8 border-t border-secondary/10">
-            <p class="text-sm text-secondary/60">&copy; 2025 Luminara. All rights reserved.</p>
-        </footer>
-
+        {mode && (
+          <button 
+            onClick={runAnalysis}
+            className="mt-8 px-12 py-3 bg-gradient-to-r from-purple-900 to-purple-800 text-white rounded-full font-medium shadow-lg hover:shadow-xl transition transform hover:scale-105"
+          >
+            Reveal My Season
+          </button>
+        )}
+      </div>
+      <canvas ref={canvasRef} className="hidden"></canvas>
+      
+      <div className="mt-8 p-4 bg-purple-50 rounded-xl flex items-start gap-3">
+        <Info className="w-5 h-5 text-purple-700 shrink-0 mt-0.5" />
+        <p className="text-sm text-purple-800">
+          For best results, use natural lighting and remove makeup. Luminara processes images locally on your device for privacy.
+        </p>
+      </div>
     </div>
+  );
+};
 
-    <script>
-        // Data Palettes and Explanations for Simulation
-        const AI_DATA = {
-            'W-F': { // Warm - Female
-                undertone: 'Warm',
-                gender: 'Female',
-                seasonal: 'Spring',
-                paletteLabel: 'Feminine Warm Palette',
-                explanation: "Your skin glows with gentle warmth — think honeyed peach and soft coral. These hues enhance your natural radiance and feel effortlessly luminous.",
-                palette: [
-                    { name: 'Peach Blush', hex: '#F7C6B4' }, { name: 'Rose Gold', hex: '#D4A6A0' },
-                    { name: 'Warm Sand', hex: '#F6EFE7' }, { name: 'Coral Pink', hex: '#FF7F66' },
-                    { name: 'Honey', hex: '#E4A76A' }, { name: 'Soft Terracotta', hex: '#D9825E' },
-                ],
-                outfits: [
-                    { name: 'Soft Linen Top', color: '#F6EFE7', desc: 'Brings out the gentle glow of warm undertones and adds a natural, sunlit softness to portraits.' },
-                    { name: 'Mustard Silk Dress', color: '#C58F3F', desc: 'The rich gold tones complement your warmth, perfect for evening events.' },
-                    { name: 'Olive Green Jacket', color: '#7A8450', desc: 'A grounded color that offers a sophisticated contrast without washing out your natural radiance.' },
-                ],
-                cultural: [
-                    { name: 'Balinese Kebaya', color: '#E4A76A', desc: 'Golden embroidery and warm lace harmonize with your glow — the result is regal, warm, and luminous.' },
-                    { name: 'Batik Sogan (Coklat)', color: '#A65B3C', desc: 'Motif Sogan dengan warna cokelat dan kuning emas alami memperkuat kesan klasik dan anggun pada kulit hangat.' },
-                ]
-            },
-            'C-M': { // Cool - Male
-                undertone: 'Cool',
-                gender: 'Male',
-                seasonal: 'Winter',
-                paletteLabel: 'Masculine Cool Palette',
-                explanation: "Cool clarity suits you — navy, steel grey, and deep slate sharpen features with a clean, modern edge.",
-                palette: [
-                    { name: 'Navy Blue', hex: '#112B44' }, { name: 'Steel Grey', hex: '#69707A' },
-                    { name: 'Deep Burgundy', hex: '#5A2B3A' }, { name: 'Slate Blue', hex: '#3D5A80' },
-                    { name: 'Midnight Purple', hex: '#2E2447' }, { name: 'Frosted Charcoal', hex: '#444053' },
-                ],
-                outfits: [
-                    { name: 'Navy Suit', color: '#112B44', desc: 'The depth of navy provides a sharp contrast, lending an air of professionalism and cool sophistication.' },
-                    { name: 'Steel Grey Sweater', color: '#69707A', desc: 'A cool neutral that grounds your look while enhancing the clarity of your features.' },
-                    { name: 'White Oxford Shirt', color: '#FFFFFF', desc: 'Crisp, bright white is a signature of cool tones, offering ultimate sharpness.' },
-                ],
-                cultural: [
-                    { name: 'Minangkabau Songket', color: '#2E2447', desc: 'Violet threads and cool metallic accents create a royal contrast that complements cool undertones with cultural pride.' },
-                    { name: 'Baju Bodo Makassar', color: '#BFD8FF', desc: 'Baju Bodo berwarna biru atau hijau mint menonjolkan keanggunan, cocok dengan nada kulit yang sejuk.' },
-                ]
-            },
-            'N-F': { // Neutral - Female
-                undertone: 'Neutral',
-                gender: 'Female',
-                seasonal: 'Summer',
-                paletteLabel: 'Universal Feminine Palette',
-                explanation: "A graceful balance — neither too warm nor cool. Muted taupes, blush-beiges, and soft mauves let your natural tone sing without overpowering it.",
-                palette: [
-                    { name: 'Blush Beige', hex: '#E7D7CE' }, { name: 'Soft Taupe', hex: '#BBAAA2' },
-                    { name: 'Warm Grey', hex: '#CFC7C1' }, { name: 'Tea Rose', hex: '#E8CFC8' },
-                    { name: 'Nude Blossom', hex: '#D9B8AF' }, { name: 'Mauve Neutral', hex: '#BFA6A0' },
-                ],
-                outfits: [
-                    { name: 'Soft Beige Linen Top', color: '#E7D7CE', desc: 'Brings out the gentle glow of warm undertones and adds a natural, sunlit softness to portraits.' },
-                    { name: 'Soft Mauve Infinity Scarf', color: '#BFA6A0', desc: 'This gentle mauve infinity scarf drapes elegantly, enhancing neutral undertones with a touch of sophisticated calm and effortless style.' },
-                    { name: 'Classic Denim Jacket', color: '#8D8A86', desc: 'A timeless piece in a balanced wash complements your neutral tone, perfect for layering.' },
-                ],
-                cultural: [
-                    { name: 'Batik Parang', color: '#8D8A86', desc: 'Earthy motifs dan muted contrasts (abu-abu/cokelat taupe) merayakan nada seimbang, sempurna untuk keanggunan formal dan sehari-hari.' },
-                    { name: 'Kebaya Encim', color: '#CFC7C1', desc: 'Warna-warna netral seperti abu-abu batu dan putih gading pada Kebaya Encim menciptakan kesan bersih dan serbaguna yang cocok dengan tone netral.' },
-                ]
-            },
-        };
+const ResultPage = ({ result, reset }) => {
+  const seasonData = SEASONS[result.season];
+  const [activeTab, setActiveTab] = useState('palette'); // palette, outfit, traditional
 
-        let currentView = 'home';
-        let simulationResultKey = 'W-F'; // Default simulation result
+  const TabButton = ({ id, label, icon: Icon }) => (
+    <button 
+      onClick={() => setActiveTab(id)}
+      className={pb-3 px-4 text-sm font-medium flex items-center gap-2 transition border-b-2 ${activeTab === id ? 'border-purple-900 text-purple-900' : 'border-transparent text-stone-400 hover:text-stone-600'}}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
+  );
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons(); // Initialize Lucide Icons
-            showView(currentView);
-            // Simulate initial loading of the first view
-            setTimeout(() => {
-                document.getElementById('home-view').classList.add('active');
-            }, 50);
+  return (
+    <div className="min-h-screen bg-stone-50 pb-20">
+      {/* Result Header */}
+      <div className="bg-purple-900 text-white pt-20 pb-16 px-6 rounded-b-[3rem] relative overflow-hidden shadow-2xl">
+        <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10 animate-fade-in-up">
+          <p className="text-purple-200 tracking-widest text-sm font-bold mb-2 uppercase">Your Luminara Analysis</p>
+          <h1 className="text-5xl md:text-6xl font-serif mb-4">{result.season}</h1>
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1 rounded-full text-sm">
+            <span className={w-3 h-3 rounded-full ${result.undertone === 'Warm' ? 'bg-orange-400' : 'bg-blue-300'}}></span>
+            {result.undertone} Undertone
+          </div>
+          <p className="mt-6 text-purple-100 max-w-lg mx-auto leading-relaxed opacity-90">
+            {seasonData.description} {seasonData.characteristics}
+          </p>
+        </div>
+      </div>
 
-            // Theme Toggle Logic (Simple Dark/Light Mode)
-            document.getElementById('theme-toggle').addEventListener('click', () => {
-                const body = document.body;
-                const icon = document.querySelector('#theme-toggle i');
-                
-                if (body.classList.contains('dark')) {
-                    // Switch to Light Mode
-                    body.classList.remove('dark');
-                    body.style.backgroundColor = 'var(--warm-sand)';
-                    body.style.color = 'var(--soft-charcoal)';
-                    icon.setAttribute('data-lucide', 'sun');
-                    icon.classList.remove('text-white');
-                    icon.classList.add('text-secondary');
-                } else {
-                    // Switch to Dark Mode
-                    body.classList.add('dark');
-                    body.style.backgroundColor = 'var(--soft-charcoal)';
-                    body.style.color = 'var(--warm-sand)';
-                    icon.setAttribute('data-lucide', 'moon');
-                    icon.classList.remove('text-secondary');
-                    icon.classList.add('text-white');
-                }
-                lucide.createIcons(); // Re-render icons
-            });
-        });
+      {/* Tabs */}
+      <div className="max-w-4xl mx-auto mt-8 px-6 border-b border-stone-200 flex gap-4 overflow-x-auto">
+        <TabButton id="palette" label="Color Palette" icon={Sun} />
+        <TabButton id="outfit" label="Casual Style" icon={Shirt} />
+        <TabButton id="traditional" label="Nusantara Heritage" icon={MapPin} />
+      </div>
 
-        function showView(viewId) {
-            const views = ['home', 'loading', 'results', 'about', 'contact'];
-            
-            // Handle the transition out
-            views.forEach(id => {
-                const element = document.getElementById(id + '-view');
-                if (element) {
-                    element.classList.remove('active');
-                    element.classList.add('hidden');
-                }
-            });
+      <div className="max-w-4xl mx-auto px-6 py-8 animate-fade-in">
+        
+        {/* PALETTE SECTION */}
+        {activeTab === 'palette' && (
+          <div className="space-y-10">
+            {/* Primary Colors */}
+            <div>
+              <h3 className="text-lg font-serif text-stone-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-[1px] bg-stone-300"></span> Primary Power Colors
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {seasonData.palette.primary.map((color, i) => (
+                  <div key={i} className="h-32 rounded-2xl shadow-sm flex items-end p-4 transition hover:scale-105" style={{ backgroundColor: color }}>
+                    <span className="bg-white/90 px-2 py-1 text-xs rounded font-mono uppercase text-stone-800 shadow-sm">{color}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            // Handle the transition in
-            setTimeout(() => {
-                const newElement = document.getElementById(viewId + '-view');
-                if (newElement) {
-                    newElement.classList.remove('hidden');
-                    // Force reflow/repaint to ensure transition runs
-                    void newElement.offsetWidth; 
-                    newElement.classList.add('active');
-                }
-            }, 100);
-            
-            currentView = viewId;
-        }
-
-        function alertCustom(message) {
-            document.getElementById('modal-message').textContent = message;
-            document.getElementById('custom-modal').classList.remove('hidden');
-            document.getElementById('custom-modal').classList.add('flex');
-        }
-
-        function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // 1. Show Loading State
-            showView('loading');
-
-            // 2. Read the file (to display it later)
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const imageDataUrl = e.target.result;
-
-                // 3. Simulate AI Analysis Delay
-                setTimeout(() => {
-                    // Randomly select a result for simulation
-                    const keys = Object.keys(AI_DATA);
-                    // Force Neutral-Female for this specific image
-                    simulationResultKey = 'N-F'; 
-                    // simulationResultKey = keys[Math.floor(Math.random() * keys.length)]; // Original random selection
-                    const data = AI_DATA[simulationResultKey];
-
-                    // 4. Populate Results Page
-                    populateResults(data, imageDataUrl);
-
-                    // 5. Show Results View
-                    showView('results');
-                }, 2000); // 2 seconds simulation delay
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function copyToClipboard(hex) {
-            if (hex.startsWith('#')) hex = hex.substring(1);
-            
-            // Fallback for secure context/iframe
-            const tempInput = document.createElement('textarea');
-            tempInput.value = hex;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            alertCustom(`Kode warna ${hex} berhasil disalin!`);
-        }
-
-        function populateResults(data, imageDataUrl) {
-            // Update Avatar
-            document.getElementById('result-avatar').src = imageDataUrl;
-
-            // Update Key Data
-            document.getElementById('result-gender').textContent = data.gender;
-            document.getElementById('result-undertone').textContent = data.undertone;
-            document.getElementById('result-seasonal').textContent = data.seasonal;
-            document.getElementById('result-confidence').textContent = (90 + Math.floor(Math.random() * 9)) + '%'; // Dynamic confidence
-            document.getElementById('palette-label').textContent = data.paletteLabel;
-            document.getElementById('result-explanation').textContent = data.explanation;
-
-            // Render Palette Swatches
-            const swatchesContainer = document.getElementById('color-palette-swatches');
-            swatchesContainer.innerHTML = '';
-            data.palette.forEach(swatch => {
-                const swatchDiv = `
-                    <div class="p-3 card-bg transition duration-300 hover:scale-[1.05] cursor-pointer" onclick="copyToClipboard('${swatch.hex}')">
-                        <div class="h-12 w-full rounded-lg mb-2 shadow-inner border border-secondary/10" style="background-color: ${swatch.hex};"></div>
-                        <p class="text-xs font-semibold text-secondary/90">${swatch.name}</p>
-                        <p class="text-xs text-secondary/60">${swatch.hex}</p>
-                    </div>
-                `;
-                swatchesContainer.innerHTML += swatchDiv;
-            });
-
-            // Render Fashion Outfits
-            const fashionContainer = document.getElementById('fashion-outfits');
-            fashionContainer.innerHTML = data.outfits.map((outfit, index) => {
-                let imageUrl = `https://placehold.co/420x560/${outfit.color.substring(1)}/${data.gender === 'Female' ? 'F2D7DA' : '69707A'}?text=Modern+Outfit+${index+1}`;
-                if (outfit.name === 'Soft Mauve Infinity Scarf') {
-                    // Update URL gambar untuk syal dengan tautan gambar baru
-                    imageUrl = 'https://i.ibb.co/6y40F7W/muted-mauve-scraft.png';
-                }
-                return `
-                    <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
-                        <img src="${imageUrl}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
-                            <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
-                        </div>
-                        <p class="text-sm text-secondary/80">${outfit.desc}</p>
-                    </div>
-                `;
-            }).join('');
-
-            // Render Cultural Outfits
-            const culturalContainer = document.getElementById('cultural-outfits');
-            culturalContainer.innerHTML = data.cultural.map((outfit, index) => `
-                <div class="card-bg p-6 transition duration-300 hover:shadow-xl hover:scale-[1.01] flex flex-col items-start">
-                    <img src="https://placehold.co/350x450/${outfit.color.substring(1)}/FFFFFF?text=Cultural+Style+${index+1}" alt="${outfit.name}" class="w-full h-auto rounded-xl object-cover mb-4 shadow-md">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <div class="w-4 h-4 rounded-full" style="background-color: ${outfit.color};"></div>
-                        <h3 class="text-lg font-bold text-secondary">${outfit.name}</h3>
-                    </div>
-                    <p class="text-sm text-secondary/80 italic">${outfit.desc}</p>
-                    <button onclick="alertCustom('Simulasi: Mencoba foto lain.')" class="mt-4 text-xs text-luminara-rose hover:underline self-end">
-                        Try different photo
-                    </button>
+            {/* Accent & Avoid */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-lg font-serif text-stone-800 mb-4">Accents & Accessories</h3>
+                <div className="flex gap-3 mb-6">
+                  {seasonData.palette.accent.map((color, i) => (
+                    <div key={i} className="w-12 h-12 rounded-full border border-stone-100 shadow-sm" style={{ backgroundColor: color }}></div>
+                  ))}
                 </div>
-            `).join('');
-
-            // Render Tips
-            const tipsContainer = document.getElementById('tips-list');
-            const tips = [
-                { icon: 'sun', text: 'Use sunscreen daily to keep your natural tone even.' },
-                { icon: 'flask-round', text: 'Match foundation undertone to AI result for seamless base.' },
-                { icon: 'lightbulb', text: 'Photograph in natural daylight for most accurate AI reading.' },
-                { icon: 'save', text: 'Store palettes and swatches — download for later use.' },
-            ];
-            tipsContainer.innerHTML = tips.map(tip => `
-                <div class="card-bg p-6 flex items-start space-x-4">
-                    <i data-lucide="${tip.icon}" class="w-6 h-6 text-luminara-rose mt-1 flex-shrink-0"></i>
-                    <p class="text-sm text-secondary/90">${tip.text}</p>
+                <div className="bg-white p-4 rounded-xl border border-yellow-100">
+                  <p className="text-sm text-stone-600 mb-2 font-bold">Recommended Metals:</p>
+                  <p className="text-purple-900">{seasonData.metals}</p>
                 </div>
-            `).join('');
-            lucide.createIcons(); // Re-render icons after injecting new content
+              </div>
+
+              <div>
+                <h3 className="text-lg font-serif text-stone-800 mb-4">Colors to Avoid</h3>
+                <div className="flex gap-3">
+                  {seasonData.palette.avoid.map((color, i) => (
+                    <div key={i} className="w-12 h-12 rounded-full border border-stone-100 shadow-sm relative opacity-70" style={{ backgroundColor: color }}>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <X size={16} className="text-stone-800/50" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-stone-500 mt-2">These shades might wash you out or clash with your natural glow.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CASUAL OUTFITS SECTION */}
+        {activeTab === 'outfit' && (
+          <div className="grid md:grid-cols-3 gap-6">
+            {seasonData.casualOutfits.map((item, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 hover:shadow-md transition">
+                <div className="h-48 bg-stone-200 relative overflow-hidden">
+                  <img 
+                    src={https://source.unsplash.com/random/400x400/?fashion,${result.season},clothes,${i}} 
+                    alt="Outfit Inspiration" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => e.target.src = 'https://placehold.co/400x400/eee/999?text=Style+Inspo'}
+                  />
+                  <div className="absolute top-2 right-2 bg-white/90 p-1 rounded-full shadow-sm">
+                    <Heart size={16} className="text-purple-400" />
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h4 className="font-serif text-lg text-purple-900 mb-1">{item.name}</h4>
+                  <p className="text-sm text-stone-500 mb-3">{item.desc}</p>
+                  <div className="flex gap-2">
+                    <span className="w-4 h-4 rounded-full border border-stone-200" style={{ backgroundColor: seasonData.palette.primary[i % 4] }}></span>
+                    <span className="w-4 h-4 rounded-full border border-stone-200" style={{ backgroundColor: seasonData.palette.accent[0] }}></span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* TRADITIONAL SECTION */}
+        {activeTab === 'traditional' && (
+          <div>
+            <div className="mb-6 p-4 bg-yellow-50 rounded-xl border border-yellow-100 text-yellow-800 text-sm">
+              <span className="font-bold">Styling Tip:</span> Based on your {result.season} season, choose fabrics in your primary palette. If you are {result.undertone}, opt for {result.undertone === 'Warm' ? 'Gold' : 'Silver'} threads in your Songket or Batik.
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              {TRADITIONAL_OUTFITS.map((item, i) => (
+                <div key={i} className="flex bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100">
+                  <div className="w-1/3 bg-stone-200 relative">
+                     <img 
+                      src={https://source.unsplash.com/random/200x300/?indonesia,traditional,${item.region}} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => e.target.src = 'https://placehold.co/200x300/eee/999?text=Nusantara'}
+                    />
+                  </div>
+                  <div className="w-2/3 p-4 flex flex-col justify-center">
+                    <span className="text-xs font-bold tracking-wider text-purple-300 uppercase mb-1">{item.region}</span>
+                    <h4 className="font-serif text-lg text-stone-800 mb-2">{item.name}</h4>
+                    <p className="text-xs text-stone-500 leading-relaxed mb-3">{item.desc}</p>
+                    <div className="mt-auto pt-2 border-t border-stone-50 flex justify-between items-center">
+                      <span className="text-xs text-stone-400">Match with:</span>
+                      <div className="flex gap-1">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: seasonData.palette.primary[0] }}></div>
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: seasonData.palette.primary[1] }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3">
+        <button 
+          onClick={reset}
+          className="w-14 h-14 bg-white text-purple-900 rounded-full shadow-lg border border-purple-100 flex items-center justify-center hover:scale-110 transition"
+          title="New Analysis"
+        >
+          <RefreshCw size={24} />
+        </button>
+        <button 
+          onClick={() => window.print()}
+          className="w-14 h-14 bg-purple-900 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition"
+          title="Download/Print Result"
+        >
+          <Download size={24} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-stone-100 py-12 border-t border-stone-200 mt-auto">
+    <div className="container mx-auto px-6 text-center">
+      <div className="flex justify-center items-center gap-2 mb-4">
+        <Sparkles className="w-5 h-5 text-purple-300" />
+        <span className="font-serif text-xl text-purple-900 font-bold tracking-widest">LUMINARA</span>
+      </div>
+      <p className="text-stone-500 text-sm mb-6">Embrace your authentic colors. Shine with confidence.</p>
+      <div className="text-xs text-stone-400">
+        © {new Date().getFullYear()} Luminara. Privacy focused - No images are stored on servers.
+      </div>
+    </div>
+  </footer>
+);
+
+export default function LuminaraApp() {
+  const [currentPage, setCurrentPage] = useState('landing');
+  const [analysisResult, setAnalysisResult] = useState(null);
+
+  const handleAnalysisComplete = (result) => {
+    setAnalysisResult(result);
+    setCurrentPage('results');
+    window.scrollTo(0,0);
+  };
+
+  const resetAnalysis = () => {
+    setAnalysisResult(null);
+    setCurrentPage('analyze');
+  };
+
+  return (
+    <div className={min-h-screen bg-stone-50 font-sans text-stone-800 ${BRAND.colors.primary}}>
+      {currentPage !== 'results' && <Header setPage={setCurrentPage} />}
+      
+      <main>
+        {currentPage === 'landing' && <LandingPage setPage={setCurrentPage} />}
+        {currentPage === 'about' && <AboutPage />}
+        {currentPage === 'analyze' && <AnalysisPage onComplete={handleAnalysisComplete} />}
+        {currentPage === 'results' && analysisResult && <ResultPage result={analysisResult} reset={resetAnalysis} />}
+      </main>
+
+      {currentPage !== 'results' && <Footer />}
+      
+      {/* Global CSS for utilities */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
+        
+        body {
+          font-family: 'Lato', sans-serif;
         }
-    </script>
-</body>
-</html>
+        h1, h2, h3, h4, .font-serif {
+          font-family: 'Playfair Display', serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f5f5f4; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #d6d3d1; 
+          border-radius: 10px;
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @media print {
+          nav, footer, button:not([title="Download/Print Result"]) {
+            display: none !important;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
